@@ -15,6 +15,8 @@ app.config['DEBUG'] = True
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///data.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['PROPAGATE_EXCEPTIONS'] = True
+app.secret_key = 'jose'
 api = Api(app)
 
 jwt = JWT(app, authenticate, identity)  # /auth
@@ -28,8 +30,8 @@ api.add_resource(UserRegister, '/register')
 
 
 @app.errorhandler(JWTError)
-def auth_error_handler(err):
-    return jsonify({'message': 'Could not authorize. Did you include a valid Authorization header?'})
+def auth_error(err):
+    return jsonify({'message': 'Could not authorize. Did you include a valid Authorization header?'}), 401
 
 if __name__ == '__main__':
     from db import db
